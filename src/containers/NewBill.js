@@ -19,6 +19,13 @@ export default class NewBill {
     const file = this.document.querySelector(`input[data-testid="file"]`).files[0]
     const filePath = e.target.value.split(/\\/g)
     const fileName = filePath[filePath.length-1]
+    // the name contain the extension
+    const fileExtension = fileName.split(".").pop();
+    // remove what is after the . (pop() remove last element of an array)
+    const validExtensions = ['jpg','jpeg','png'];
+    const errorMessageImage = this.document.querySelector(".error__image");
+    if (validExtensions.includes(fileExtension)){
+      errorMessageImage.style.display = "none";
     this.firestore
       .storage
       .ref(`justificatifs/${fileName}`)
@@ -28,6 +35,10 @@ export default class NewBill {
         this.fileUrl = url
         this.fileName = fileName
       })
+    }else{
+      file.value="";
+      errorMessageImage.style.display = "block";
+    }
   }
   handleSubmit = e => {
     e.preventDefault()
