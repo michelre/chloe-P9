@@ -153,6 +153,7 @@ export default class {
 
   }
 
+  /* istanbul ignore next */
   // not need to cover this function by tests
   getBillsAllUsers = () => {
     if (this.firestore) {
@@ -173,6 +174,7 @@ export default class {
     }
   }
     
+  /* istanbul ignore next */
   // not need to cover this function by tests
   updateBill = (bill) => {
     if (this.firestore) {
