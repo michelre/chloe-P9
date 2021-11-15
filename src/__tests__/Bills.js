@@ -9,6 +9,7 @@ import Bills from "../containers/Bills.js";
 import { bills } from "../fixtures/bills.js";
 import firebase from "../__mocks__/firebase";
 import { localStorageMock } from "../__mocks__/localStorage.js"
+import { ROUTES, ROUTES_PATH } from "../constants/routes"
 
 describe("Given I am connected as an employee", () => {
 	describe("When I am on Bills Page", () => {
@@ -21,9 +22,7 @@ describe("Given I am connected as an employee", () => {
     //   }))
 			
 		// });
-		//moi
-		// test("Then I can click on new bill button to rendern a form / and I click on the newbill button, then the click nex bill handler should be called", () => {
-		// });
+		
     describe("When I click on the eye icon", () => {
       test("Then a modal should open", () => {
         Object.defineProperty(window, 'localStorage', { value: localStorageMock })
@@ -53,7 +52,34 @@ describe("Given I am connected as an employee", () => {
       })
     })
 
-		//moi
+    describe("When I click on the New Bill button", () => {
+      test("Then I should be sent to NewBill page", () => {
+        Object.defineProperty(window, 'localStorage', { value: localStorageMock })
+        window.localStorage.setItem('user', JSON.stringify({
+          type: 'Employee'
+        }))
+        const html = BillsUI({ data: bills });
+        document.body.innerHTML = html;
+        const onNavigate = (pathname) => {
+          document.body.innerHTML = ROUTES({ pathname })
+        }
+        const firestore = null
+        const allBills = new Bills({
+          document, onNavigate, firestore, localStorage: window.localStorage
+        })
+
+        const newBillButton = screen.getByTestId('btn-new-bill')
+        const handleClickNewBill = jest.fn(allBills.handleClickNewBill())
+        newBillButton.addEventListener('click', handleClickNewBill)
+        userEvent.click(newBillButton)
+        expect(handleClickNewBill).toHaveBeenCalled()
+
+        const titleNewBill = screen.getAllByText('Envoyer une note de frais')
+        expect(titleNewBill).toBeTruthy()
+      })
+    })
+
+
 		test("Then bills should be ordered from earliest to latest", () => {
 			const html = BillsUI({ data: bills });
 			document.body.innerHTML = html;
