@@ -1,3 +1,6 @@
+/**
+ * @jest-environment jsdom
+ */
 import { fireEvent, screen } from "@testing-library/dom"
 import NewBillUI from "../views/NewBillUI.js"
 import NewBill from "../containers/NewBill.js"
@@ -11,16 +14,57 @@ describe("Given I am connected as an employee", () => {
   describe("When I am on NewBill Page", () => {
     describe("When I upload a new file with the right format", () => {
       test("Then the image should be in the file handler", () => {
+        Object.defineProperty(window, 'localStorage', { value: localStorageMock })
+        window.localStorage.setItem('user', JSON.stringify({
+          type: 'Employee'
+        }))
         const html = NewBillUI()
         document.body.innerHTML = html
-        //to-do write assertion
+        const onNavigate = (pathname) => {
+          document.body.innerHTML = ROUTES({ pathname })
+        }
+        const firestore = null
+        const newBill = new NewBill({
+          document, onNavigate, firestore, localStorage: window.localStorage
+        })
+
+        const fileInput = screen.getByTestId("file")
+        const newFile = new File([`(⌐□_□)`], 'test.jpeg', {type: "image/jpeg"})
+        const handleChangeFile = jest.fn(newBill.handleChangeFile)
+        fileInput.addEventListener('change', handleChangeFile)
+        fireEvent.change(fileInput, {target: {files:[newFile],}})
+        expect(handleChangeFile).toHaveBeenCalled()
+        expect(fileInput.files[0]).toStrictEqual(newFile)
+
       })
     })
     describe("When I upload a new file with a bad format", () => {
       test("Then it should display an error message", () => {
+        Object.defineProperty(window, 'localStorage', { value: localStorageMock })
+        window.localStorage.setItem('user', JSON.stringify({
+          type: 'Employee'
+        }))
         const html = NewBillUI()
         document.body.innerHTML = html
-        //to-do write assertion
+        const onNavigate = (pathname) => {
+          document.body.innerHTML = ROUTES({ pathname })
+        }
+        const firestore = null
+        const newBill = new NewBill({
+          document, onNavigate, firestore, localStorage: window.localStorage
+        })
+
+        const fileInput = screen.getByTestId("file")
+        const newFile = new File([`test`], 'test.txt', {type: "texte/txt"})
+        const handleChangeFile = jest.fn(newBill.handleChangeFile)
+        fileInput.addEventListener('change', handleChangeFile)
+        fireEvent.change(fileInput, {target: {files:[newFile],}})
+        expect(handleChangeFile).toHaveBeenCalled()
+        expect(fileInput.value).toBe("")
+
+        const errorMessage = document.querySelector(".error__image")
+        expect(errorMessage.style.display).toBe("block")
+
       })
     })
     describe("When I submit a new bill with all the correct informations", () => {
