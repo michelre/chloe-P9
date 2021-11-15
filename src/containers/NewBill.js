@@ -36,7 +36,7 @@ export default class NewBill {
         this.fileName = fileName
       })
     }else{
-      file.value="";
+      e.target.value="";
       errorMessageImage.style.display = "block";
     }
   }
