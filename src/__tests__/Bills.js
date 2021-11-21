@@ -10,18 +10,12 @@ import { bills } from "../fixtures/bills.js";
 import firebase from "../__mocks__/firebase";
 import { localStorageMock } from "../__mocks__/localStorage.js"
 import { ROUTES, ROUTES_PATH } from "../constants/routes"
+import Router from "../app/Router";
+import Firestore from "../app/Firestore"
 
 describe("Given I am connected as an employee", () => {
 	describe("When I am on Bills Page", () => {
-		// test("Then bill icon in vertical layout should be highlighted", () => {
-		// 	const html = BillsUI({ data: [] });
-		// 	document.body.innerHTML = html;
-    //   Object.defineProperty(window, 'localStorage', { value: localStorageMock })
-    //   window.localStorage.setItem('user', JSON.stringify({
-    //     type: 'Employee'
-    //   }))
-			
-		// });
+		
 		
     describe("When I click on the eye icon", () => {
       test("Then a modal should open", () => {
@@ -40,7 +34,7 @@ describe("Given I am connected as an employee", () => {
         })
 
         $.fn.modal = jest.fn();
-        // $.fn correspond à jquery.prototype
+        // $.fn correspond à jquery.prototype .modal vient de bootstrap
         const eye = screen.getAllByTestId('icon-eye')[0]
         const handleClickIconEye = jest.fn(allBills.handleClickIconEye(eye))
         eye.addEventListener('click', handleClickIconEye)
@@ -91,6 +85,51 @@ describe("Given I am connected as an employee", () => {
 			expect(dates).toEqual(datesSorted);
 		});
 	});
+});
+
+// Tests for 100% on branches in test coverage (else path)
+describe("Given I am connected as an employee", () => {
+	describe("When I am on Bills Page and there is no bills", () => {
+    test("Then there is no eye icon on the page", () => {
+      Object.defineProperty(window, 'localStorage', { value: localStorageMock })
+      window.localStorage.setItem('user', JSON.stringify({
+        type: 'Employee'
+      }))
+      const html = BillsUI({ data: []});
+      document.body.innerHTML = html;
+      const onNavigate = (pathname) => {
+        document.body.innerHTML = ROUTES({ pathname })
+      }
+      const firestore = null
+      const allBills = new Bills({
+        document, onNavigate, firestore, localStorage: window.localStorage
+      })
+      const eye = document.querySelectorAll(`div[data-testid="icon-eye"]`)[0]
+      expect(eye).toBeFalsy()
+    });
+  });
+});
+
+describe("Given I am connected as an employee", () => {
+	describe("When I am on Bills Page and there is no bills", () => {
+    test("Then there is a New Bill button on the page", () => {
+      Object.defineProperty(window, 'localStorage', { value: localStorageMock })
+      window.localStorage.setItem('user', JSON.stringify({
+        type: 'Employee'
+      }))
+      const html = BillsUI({ data: []});
+      document.body.innerHTML = html;
+      const onNavigate = (pathname) => {
+        document.body.innerHTML = ROUTES({ pathname })
+      }
+      const firestore = null
+      const allBills = new Bills({
+        document, onNavigate, firestore, localStorage: window.localStorage
+      })
+      const newBillButton = screen.queryByTestId('btn-new-bill')
+      expect(newBillButton).toBeTruthy()
+    });
+  });
 });
 
 describe("When I am on Bills page but it is loading", () => {
