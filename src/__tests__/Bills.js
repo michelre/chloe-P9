@@ -15,7 +15,19 @@ import Firestore from "../app/Firestore"
 
 describe("Given I am connected as an employee", () => {
 	describe("When I am on Bills Page", () => {
-		
+		test("Then bill icon in vertical layout should be highlighted", () => {
+      Object.defineProperty(window, 'localStorage', {value: localStorageMock})
+      window.localStorage.setItem('user', JSON.stringify({
+          type: 'Employee'
+      }))
+      Firestore.bills = () => ({ bills: [], get: jest.fn().mockResolvedValue() });
+  
+      Object.defineProperty(window, "location", { value: { hash: ROUTES_PATH['Bills'] } })
+      document.body.innerHTML = `<div id='root'></div>`
+      Router()
+  
+      expect(screen.queryByTestId('icon-window').classList.contains('active-icon')).toBeTruthy()
+      });
 		
     describe("When I click on the eye icon", () => {
       test("Then a modal should open", () => {
