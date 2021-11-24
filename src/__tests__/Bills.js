@@ -21,14 +21,14 @@ describe("Given I am connected as an employee", () => {
           type: 'Employee'
       }))
       Firestore.bills = () => ({ bills: [], get: jest.fn().mockResolvedValue() });
-  
+
       Object.defineProperty(window, "location", { value: { hash: ROUTES_PATH['Bills'] } })
       document.body.innerHTML = `<div id='root'></div>`
       Router()
-  
+
       expect(screen.queryByTestId('icon-window').classList.contains('active-icon')).toBeTruthy()
       });
-		
+
     describe("When I click on the eye icon", () => {
       test("Then a modal should open", () => {
         Object.defineProperty(window, 'localStorage', { value: localStorageMock })
@@ -110,13 +110,14 @@ describe("Given I am connected as an employee", () => {
       const html = BillsUI({ data: []});
       document.body.innerHTML = html;
       const onNavigate = (pathname) => {
-        document.body.innerHTML = ROUTES({ pathname })
+        document.body.innerHTML = ROUTES({ pathname, loading: true })
       }
       const firestore = null
       const allBills = new Bills({
         document, onNavigate, firestore, localStorage: window.localStorage
       })
-      const eye = document.querySelectorAll(`div[data-testid="icon-eye"]`)[0]
+
+      const eye = screen.queryByTestId(`icon-eye`)
       expect(eye).toBeFalsy()
     });
   });

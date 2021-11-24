@@ -10,23 +10,22 @@ export default class NewBill {
     const formNewBill = this.document.querySelector(`form[data-testid="form-new-bill"]`)
     formNewBill.addEventListener("submit", this.handleSubmit)
     const file = this.document.querySelector(`input[data-testid="file"]`)
+    //file.addEventListener("change", this.handleChangeFile)
     file.addEventListener("change", this.handleChangeFile)
     this.fileUrl = null
     this.fileName = null
     new Logout({ document, localStorage, onNavigate })
   }
   handleChangeFile = e => {
-    const file = this.document.querySelector(`input[data-testid="file"]`).files[0]
-    const filePath = e.target.value.split(/\\/g)
-    const fileName = filePath[filePath.length-1]
+    const file = e.target.files[0]
+    const fileName = file.name
     // the name contain the extension
     const fileExtension = fileName.split(".").pop();
     // remove what is after the . (pop() remove last element of an array)
     const validExtensions = ['jpg','jpeg','png'];
     const errorMessageImage = this.document.querySelector(".error__image");
     if (validExtensions.includes(fileExtension)){
-      //errorMessageImage.style.display = "none";
-      /*istanbul ignore next*/
+      errorMessageImage.style.display = "none";
       this.firestore
         .storage
         .ref(`justificatifs/${fileName}`)
