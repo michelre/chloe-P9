@@ -25,15 +25,16 @@ export default class NewBill {
     const validExtensions = ['jpg','jpeg','png'];
     const errorMessageImage = this.document.querySelector(".error__image");
     if (validExtensions.includes(fileExtension)){
-      errorMessageImage.style.display = "none";
-    this.firestore
-      .storage
-      .ref(`justificatifs/${fileName}`)
-      .put(file)
-      .then(snapshot => snapshot.ref.getDownloadURL())
-      .then(url => {
-        this.fileUrl = url
-        this.fileName = fileName
+      //errorMessageImage.style.display = "none";
+      /*istanbul ignore next*/
+      this.firestore
+        .storage
+        .ref(`justificatifs/${fileName}`)
+        .put(file)
+        .then(snapshot => snapshot.ref.getDownloadURL())
+        .then(url => {
+          this.fileUrl = url
+          this.fileName = fileName
       })
     }else{
       e.target.value="";

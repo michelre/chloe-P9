@@ -2,42 +2,19 @@
  * @jest-environment jsdom
  */
 import { fireEvent, screen } from "@testing-library/dom"
+import '@testing-library/jest-dom'
 import NewBillUI from "../views/NewBillUI.js"
 import NewBill from "../containers/NewBill.js"
 import BillsUI from "../views/BillsUI.js"
 import firebase from "../__mocks__/firebase.js"
 import { localStorageMock } from "../__mocks__/localStorage.js"
 import { ROUTES, ROUTES_PATH } from "../constants/routes"
+import userEvent from "@testing-library/user-event"
 
 
 describe("Given I am connected as an employee", () => {
   describe("When I am on NewBill Page", () => {
-    describe("When I upload a new file with the right format", () => {
-      test("Then the image should be in the file handler", () => {
-        Object.defineProperty(window, 'localStorage', { value: localStorageMock })
-        window.localStorage.setItem('user', JSON.stringify({
-          type: 'Employee'
-        }))
-        const html = NewBillUI()
-        document.body.innerHTML = html
-        const onNavigate = (pathname) => {
-          document.body.innerHTML = ROUTES({ pathname })
-        }
-        const firestore = null
-        const newBill = new NewBill({
-          document, onNavigate, firestore, localStorage: window.localStorage
-        })
-
-        const fileInput = screen.getByTestId("file")
-        const newFile = new File([`(⌐□_□)`], 'test.jpeg', {type: "image/jpeg"})
-        const handleChangeFile = jest.fn(newBill.handleChangeFile)
-        fileInput.addEventListener('change', handleChangeFile)
-        fireEvent.change(fileInput, {target: {files:[newFile],}})
-        expect(handleChangeFile).toHaveBeenCalled()
-        expect(fileInput.files[0]).toStrictEqual(newFile)
-
-      })
-    })
+    
     describe("When I upload a new file with a bad format", () => {
       test("Then it should display an error message", () => {
         Object.defineProperty(window, 'localStorage', { value: localStorageMock })
@@ -64,9 +41,62 @@ describe("Given I am connected as an employee", () => {
 
         const errorMessage = document.querySelector(".error__image")
         expect(errorMessage.style.display).toBe("block")
-
       })
     })
+
+    describe("When I upload a new file with the right format", () => {
+      test("Then the image should be in the file handler", () => {
+        Object.defineProperty(window, 'localStorage', { value: localStorageMock })
+        window.localStorage.setItem('user', JSON.stringify({
+          type: 'Employee'
+        }))
+        const html = NewBillUI()
+        document.body.innerHTML = html
+        const onNavigate = (pathname) => {
+          document.body.innerHTML = ROUTES({ pathname })
+        }
+
+        // const firestoreMock = {
+        //   ref: jest.fn().mockReturnThis(),
+        //   doc: jest.fn().mockReturnThis(),
+        //   put: jest.fn().mockImplementation(() => Promise.resolve({ ref: {getDownloadURL: () => Promise.resolve()} })),
+        // };
+  
+        // const firestore = {
+        //   storage : firestoreMock
+        // }
+
+        // const firestoreMock = {
+        //   storage: {
+        //     ref:() =>{return firestore.storage},
+        //     put: async()=>{
+        //       return {
+        //         ref: {getDownload:() =>{"https://www.test_url.com"}},
+        //       }
+        //     },
+        //   },
+        // };
+        // const firestore = firestoreMock
+
+        const firestore =null
+
+        const newBill = new NewBill({
+          document, onNavigate, firestore, localStorage: window.localStorage
+        })
+
+        const fileInput = screen.getByTestId("file")
+        const newFile = new File(["(⌐□_□)"], "test.jpeg", {type: "image/jpeg"})
+        const handleChangeFile = jest.fn(newBill.handleChangeFile)
+        fileInput.addEventListener("change", handleChangeFile)
+        fireEvent.change(fileInput, {target: {files: [newFile],},})
+        expect(handleChangeFile).toHaveBeenCalled()
+        expect(fileInput.files[0]).toStrictEqual(newFile)
+         const errorMessage = document.querySelector(".error__image")
+         //const errorMessage = screen.getByTestId("error")
+         //expect(errorMessage.style.display).toBe("none")
+      })
+    })
+
     describe("When I submit a new bill with all the correct informations", () => {
       test("Then a new bill should be created and I should be sent to Bills Page", () => {
         Object.defineProperty(window, 'localStorage', { value: localStorageMock })
